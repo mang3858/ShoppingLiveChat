@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OnPick Live Chat</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* [기본 스타일] */
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Noto Sans KR', sans-serif; }
+    body { background-color: #f5f5f5; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+
+    .mobile-container {
+      width: 100%;
+      max-width: 400px;
+      height: 100vh;
+      max-height: 800px;
+      background-color: #fff;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .header { text-align: center; padding: 15px 0; background: #fff; z-index: 10; border-bottom: 1px solid #eee; }
+    .logo { font-size: 36px; font-weight: 800; text-decoration: none; display: inline-block; font-style: italic; margin: 0; cursor: pointer; }
+    .logo-on { color: #C26765; }
+    .logo-pick { color: #F2D785; }
+
+    /* [비디오 영역] */
+    .video-area {
+      flex: 1;
+      position: relative;
+      background: #ddd;
+      overflow: hidden;
+    }
+
+    /* [아보카도 이미지 스타일] */
+    .video-bg {
+      position: absolute;
+      top: 60px;
+      bottom: 150px;
+      width: 90%;
+      left: 50%;
+      transform: translateX(-50%);
+      object-fit: cover;
+      z-index: 0;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    /* [상단 오버레이] */
+    .top-overlay {
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      right: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 10;
+    }
+    .live-tag { background-color: #ff4d4f; color: white; padding: 2px 6px; font-size: 12px; font-weight: bold; border-radius: 4px; }
+    .viewer-count { color: #333; font-size: 13px; font-weight: 600; background: rgba(255,255,255,0.7); padding: 2px 8px; border-radius: 12px; }
+
+    /* [상품 정보 오버레이] */
+    .product-info-overlay {
+      position: absolute;
+      bottom: 80px;
+      left: 15px;
+      color: #000;
+      text-shadow: 0 1px 2px rgba(255,255,255,0.8);
+      z-index: 10;
+    }
+    .product-title { font-weight: bold; font-size: 16px; margin-bottom: 4px; }
+    .product-price { font-size: 14px; }
+    .discount-rate { color: #ff4d4f; font-weight: bold; margin-right: 5px; }
+
+    .side-buttons { position: absolute; right: 15px; bottom: 100px; display: flex; flex-direction: column; gap: 15px; align-items: center; z-index: 20; }
+    .icon-btn { background: rgba(255, 255, 255, 0.9); border: none; width: 40px; height: 40px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 20px; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.2); transition: transform 0.2s; }
+    .icon-btn:active { transform: scale(0.9); }
+    .heart-btn.active { color: #ff4d4f; }
+
+    .chat-layer { display: none; z-index: 10; }
+    .chat-layer.active { display: block; }
+
+    .coupon-banner { position: absolute; bottom: 240px; left: 15px; background: linear-gradient(90deg, #bf6565, #d48888); color: white; padding: 8px 12px; font-size: 13px; font-weight: bold; display: flex; align-items: center; gap: 8px; cursor: pointer; border: none; border-radius: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); animation: fadeIn 0.3s ease-in-out; }
+
+    .chat-messages { position: absolute; bottom: 80px; left: 15px; width: 70%; height: 150px; overflow-y: auto; scrollbar-width: none; -ms-overflow-style: none; mask-image: linear-gradient(to bottom, transparent, black 20%); }
+    .chat-messages::-webkit-scrollbar { display: none; }
+    .message { background: rgba(0,0,0,0.4); color: #fff; padding: 4px 8px; border-radius: 4px; margin-bottom: 5px; font-size: 12px; display: inline-block; clear: both; float: left; }
+
+    .chat-input-container { position: absolute; bottom: 0; left: 0; width: 100%; padding: 10px 15px; background: rgba(255,255,255,0.2); backdrop-filter: blur(5px); display: flex; align-items: center; }
+    .chat-input { width: 100%; padding: 10px; border: 1px solid #ccc; background: rgba(255,255,255,0.8); border-radius: 4px; outline: none; }
+
+    /* [구매하기 모달 (바텀 시트)] */
+    .cart-modal { position: absolute; bottom: 0; left: 0; width: 100%; background: #fff; border-top-left-radius: 15px; border-top-right-radius: 15px; padding: 20px; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1); z-index: 100; }
+    .cart-modal.active { transform: translateY(0); }
+
+    .modal-handle { width: 40px; height: 4px; background: #ddd; border-radius: 2px; margin: 0 auto 15px; cursor: pointer; }
+    .modal-close { position: absolute; right: 15px; top: 10px; font-size: 20px; color: #999; cursor: pointer; background: none; border: none; }
+
+    .select-box { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 15px; font-size: 14px; color: #333; }
+
+    #selectedItemsContainer { max-height: 200px; overflow-y: auto; margin-bottom: 10px; }
+
+    .selected-item { background: #f9f9f9; padding: 10px; border-radius: 4px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+    .item-name { font-size: 14px; font-weight: bold; margin-bottom: 5px; }
+
+    /* [수정됨] 수량 조절 박스 스타일 수정 (너비 고정) */
+    .qty-control {
+      display: flex;
+      align-items: center;
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      width: fit-content; /* 내용물 크기에 딱 맞게 너비 설정 */
+    }
+    .qty-btn { width: 25px; height: 25px; border: none; background: none; cursor: pointer; font-size: 16px; }
+    .qty-val { width: 30px; text-align: center; font-size: 14px; }
+
+    .total-price-area { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; font-weight: bold; padding-top: 10px; border-top: 1px solid #eee; }
+    .price-val { color: #bf6565; font-size: 18px; }
+    .action-buttons { display: flex; gap: 10px; }
+    .btn { flex: 1; padding: 12px; border: none; border-radius: 4px; font-weight: bold; font-size: 14px; cursor: pointer; }
+    .btn-cart { background-color: #bf6565; color: white; }
+    .btn-buy { background-color: #f1dd9e; color: #5a4a4a; }
+
+    /* [확인용 팝업 모달 스타일] */
+    .popup-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+    }
+
+    .popup-content {
+      background-color: #fff;
+      padding: 30px 20px;
+      width: 280px;
+      border-radius: 8px;
+      text-align: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+
+    .popup-message {
+      font-size: 18px;
+      font-weight: 700;
+      color: #333;
+      margin-bottom: 25px;
+    }
+
+    .popup-btn-group {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    }
+
+    .btn-style {
+      flex: 1;
+      background-color: #C26765;
+      color: #F2D785;
+      border: none;
+      padding: 12px 0;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      border-radius: 2px;
+    }
+    .btn-style:hover { background-color: #a85553; }
+
+    .btn-style-outline {
+      background-color: #eee;
+      color: #333;
+    }
+    .btn-style-outline:hover { background-color: #ddd; }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  </style>
+</head>
+<body>
+
+<div class="mobile-container">
+  <header class="header">
+    <a href="../home/home.html" class="logo">
+      <span class="logo-on">On</span><span class="logo-pick">Pick</span>
+    </a>
+  </header>
+
+  <div class="video-area" id="videoArea">
+    <div class="top-overlay">
+      <span class="live-tag">● LIVE</span>
+      <span class="viewer-count"><i class="fas fa-user"></i> 25,655</span>
+    </div>
+
+    <img src="../../static/image/avocado.png" class="video-bg" alt="아보카도 상품 이미지">
+
+    <div class="product-info-overlay">
+      <div class="product-title">잘 익은 아보카도</div>
+      <div class="product-price"><span class="discount-rate">30%</span> 299원(100g)</div>
+    </div>
+
+    <div class="chat-layer" id="chatLayer">
+      <button class="coupon-banner">
+        <i class="fas fa-bullhorn"></i>
+        라이브 단독 추가 할인 쿠폰
+      </button>
+
+      <div class="chat-messages" id="chatMessages">
+        <div class="message">안녕하세요! 아보카도 상태 좋나요?</div>
+        <div class="message">배송 언제 시작되나요?</div>
+        <div class="message">구매 완료했습니다!</div>
+      </div>
+
+      <div class="chat-input-container">
+        <input type="text" class="chat-input" placeholder="채팅을 입력하세요">
+      </div>
+    </div>
+  </div>
+
+  <div class="side-buttons">
+    <button class="icon-btn heart-btn" id="btnHeart" onclick="toggleLike()">
+      <i class="far fa-heart"></i>
+    </button>
+    <button class="icon-btn" id="btnChat" onclick="toggleChat()">
+      <i class="far fa-comment-dots"></i>
+    </button>
+    <button class="icon-btn" id="btnCart" onclick="toggleCartModal()">
+      <i class="fas fa-shopping-cart"></i>
+    </button>
+  </div>
+
+  <div class="cart-modal" id="cartModal">
+    <div class="modal-handle" onclick="closeCartModal()"></div>
+    <button class="modal-close" onclick="closeCartModal()">&times;</button>
+
+    <select class="select-box" id="optionSelect" onchange="handleOptionChange()">
+      <option value="">옵션을 선택해주세요</option>
+      <option value="peru">페루산 아보카도 (299원)</option>
+      <option value="nz">뉴질랜드산 아보카도 (350원)</option>
+    </select>
+
+    <div id="selectedItemsContainer"></div>
+
+    <div class="total-price-area">
+      <span>총 금액</span>
+      <span class="price-val" id="totalPrice">0원</span>
+    </div>
+
+    <div class="action-buttons">
+      <button class="btn btn-cart" id="btnCartAction">장바구니</button>
+      <button class="btn btn-buy" id="btnBuyAction">구매하기</button>
+    </div>
+  </div>
+</div>
+
+<div id="confirmModal" class="popup-overlay">
+  <div class="popup-content">
+    <div class="popup-message" id="confirmMessage"></div>
+    <div class="popup-btn-group">
+      <button id="btnYes" class="btn-style">예</button>
+      <button id="btnNo" class="btn-style btn-style-outline">아니요</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  function toggleLike() {
+    const btn = document.getElementById('btnHeart');
+    const icon = btn.querySelector('i');
+    btn.classList.toggle('active');
+    icon.className = btn.classList.contains('active') ? 'fas fa-heart' : 'far fa-heart';
+  }
+
+  function toggleChat() {
+    const chatLayer = document.getElementById('chatLayer');
+    document.getElementById('cartModal').classList.remove('active');
+
+    if (chatLayer.classList.contains('active')) {
+      chatLayer.classList.remove('active');
+    } else {
+      chatLayer.classList.add('active');
+      const msgBox = document.getElementById('chatMessages');
+      msgBox.scrollTop = msgBox.scrollHeight;
+    }
+  }
+
+  function toggleCartModal() {
+    const modal = document.getElementById('cartModal');
+    const chatLayer = document.getElementById('chatLayer');
+    chatLayer.classList.remove('active');
+
+    if (modal.classList.contains('active')) {
+      closeCartModal();
+    } else {
+      modal.classList.add('active');
+    }
+  }
+
+  function closeCartModal() {
+    document.getElementById('cartModal').classList.remove('active');
+  }
+
+  // --- 상품 옵션 로직 ---
+  const productOptions = {
+    'peru': { name: '페루산 아보카도', price: 299 },
+    'nz':   { name: '뉴질랜드산 아보카도', price: 350 }
+  };
+
+  function handleOptionChange() {
+    const select = document.getElementById('optionSelect');
+    const selectedValue = select.value;
+
+    if (!selectedValue || !productOptions[selectedValue]) return;
+
+    const existingItem = document.getElementById(`item-${selectedValue}`);
+    if (existingItem) {
+      alert("이미 선택된 옵션입니다.");
+      select.value = "";
+      return;
+    }
+
+    addItemToForList(selectedValue);
+    select.value = "";
+  }
+
+  function addItemToForList(key) {
+    const container = document.getElementById('selectedItemsContainer');
+    const itemData = productOptions[key];
+
+    const itemHTML = `
+      <div class="selected-item" id="item-${key}" data-price="${itemData.price}">
+        <div>
+          <div class="item-name">${itemData.name}</div>
+          <div class="qty-control">
+            <button class="qty-btn" onclick="updateItemQty('${key}', -1)">-</button>
+            <div class="qty-val" id="qty-${key}">1</div>
+            <button class="qty-btn" onclick="updateItemQty('${key}', 1)">+</button>
+          </div>
+        </div>
+        <div style="display:flex; align-items:center;">
+          <span style="font-weight:bold;" id="price-${key}">${itemData.price}원</span>
+          <button style="border:none; background:none; margin-left:10px; color:#999; cursor:pointer;" onclick="removeItem('${key}')">&times;</button>
+        </div>
+      </div>
+    `;
+
+    container.insertAdjacentHTML('beforeend', itemHTML);
+    updateTotalPrice();
+  }
+
+  function updateItemQty(key, change) {
+    const qtyElement = document.getElementById(`qty-${key}`);
+    const priceElement = document.getElementById(`price-${key}`);
+    let currentQty = parseInt(qtyElement.innerText);
+
+    currentQty += change;
+    if (currentQty < 1) currentQty = 1;
+
+    qtyElement.innerText = currentQty;
+
+    const unitPrice = productOptions[key].price;
+    const itemTotalPrice = currentQty * unitPrice;
+    priceElement.innerText = itemTotalPrice + '원';
+
+    updateTotalPrice();
+  }
+
+  function removeItem(key) {
+    const itemDiv = document.getElementById(`item-${key}`);
+    if (itemDiv) {
+      itemDiv.remove();
+      updateTotalPrice();
+    }
+  }
+
+  function updateTotalPrice() {
+    const items = document.querySelectorAll('.selected-item');
+    let total = 0;
+
+    items.forEach(item => {
+      const price = parseInt(item.getAttribute('data-price'));
+      const qtyText = item.querySelector('.qty-val').innerText;
+      const qty = parseInt(qtyText);
+
+      total += (price * qty);
+    });
+
+    document.getElementById('totalPrice').innerText = total + '원';
+  }
+
+  // --- 페이지 이동 로직 ---
+
+  const btnCartAction = document.getElementById('btnCartAction');
+  const btnBuyAction = document.getElementById('btnBuyAction');
+  const confirmModal = document.getElementById('confirmModal');
+  const confirmMessage = document.getElementById('confirmMessage');
+  const btnYes = document.getElementById('btnYes');
+  const btnNo = document.getElementById('btnNo');
+
+  let currentAction = '';
+
+  if(btnCartAction) {
+    btnCartAction.addEventListener('click', function() {
+      confirmMessage.innerHTML = '장바구니로<br>이동하시겠습니까?';
+      currentAction = 'cart';
+      confirmModal.style.display = 'flex';
+    });
+  }
+
+  if(btnBuyAction) {
+    btnBuyAction.addEventListener('click', function() {
+      confirmMessage.innerText = '구매하시겠습니까?';
+      currentAction = 'buy';
+      confirmModal.style.display = 'flex';
+    });
+  }
+
+  if(btnYes) {
+    btnYes.addEventListener('click', function() {
+      if(currentAction === 'cart') {
+        location.href = '../cart/cart.html';
+      } else if(currentAction === 'buy') {
+        location.href = '../order/purchase.html';
+      }
+    });
+  }
+
+  if(btnNo) {
+    btnNo.addEventListener('click', function() {
+      confirmModal.style.display = 'none';
+      currentAction = '';
+    });
+  }
+</script>
+</body>
+</html>
