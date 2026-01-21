@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OnPick Cart</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --onpick-red: #C26765;
+            --onpick-gold: #F2D785;
+            --text: #111;
+            --muted: #666;
+            --line: #e9e9e9;
+            --bg: #fff;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            margin: 0;
+            background: var(--bg);
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+            color: var(--text);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 420px;
+            padding: 26px 20px 34px;
+        }
+
+        /* 로고 */
+        .logo {
+            display: flex;
+            justify-content: center;
+            margin: 10px 0 18px;
+            text-decoration: none;
+            font-size: 34px;
+            font-weight: 800;
+            font-style: italic;
+            letter-spacing: -0.5px;
+        }
+
+        .logo-on {
+            color: var(--onpick-red);
+        }
+
+        .logo-pick {
+            color: var(--onpick-gold);
+        }
+
+        /* 상단 전체선택 */
+        .select-all {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 6px 2px 14px;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .select-all label {
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        /* 체크박스(기본) */
+        input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #111;
+            cursor: pointer;
+        }
+
+        /* 장바구니 리스트 */
+        .cart-list {
+            padding-top: 4px;
+        }
+
+        .cart-item {
+            display: flex;
+            gap: 12px;
+            padding: 16px 2px;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .item-left {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .thumb {
+            width: 56px;
+            height: 56px;
+            border-radius: 6px;
+            background: #f1f1f1;
+            object-fit: cover;
+            flex-shrink: 0;
+            margin-top: 6px;
+        }
+
+        .item-info {
+            width: 100%;
+            min-width: 0;
+        }
+
+        .item-title {
+            font-size: 18px;
+            font-weight: 800;
+            margin: 0 0 6px;
+            line-height: 1.2;
+        }
+
+        .meta {
+            font-size: 14px;
+            color: #222;
+            line-height: 1.35;
+        }
+
+        .meta .label {
+            color: #222;
+            font-weight: 700;
+            margin-right: 4px;
+        }
+
+        /* 수량 컨트롤 */
+        .qty-row {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-top: 8px;
+            color: #222;
+        }
+
+        .qty-btn {
+            width: 30px;
+            height: 30px;
+            border: none;
+            background: transparent;
+            font-size: 22px;
+            line-height: 30px;
+            cursor: pointer;
+            color: #111;
+            padding: 0;
+        }
+
+        .qty {
+            min-width: 14px;
+            text-align: center;
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        /* 총 금액 */
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 22px 2px 14px;
+            font-size: 18px;
+            font-weight: 800;
+        }
+
+        .total-row .total {
+            color: var(--onpick-red);
+            font-size: 20px;
+            font-weight: 900;
+            letter-spacing: -0.2px;
+        }
+
+        /* 구매하기 버튼 */
+        .btn-buy {
+            width: 100%;
+            margin-top: 10px;
+            border: none;
+            background: var(--onpick-red);
+            color: var(--onpick-gold);
+            font-size: 18px;
+            font-weight: 800;
+            padding: 16px 0;
+            cursor: pointer;
+            border-radius: 0;
+            transition: background-color .2s;
+        }
+
+        .btn-buy:hover {
+            background: #a85553;
+        }
+
+        /* 작은 안내*/
+        .hint {
+            margin-top: 6px;
+            font-size: 12px;
+            color: #999;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <a href="../home/home.html" class="logo">
+            <span class="logo-on">On</span><span class="logo-pick">Pick</span>
+        </a>
+
+        <!-- 전체 선택 -->
+        <div class="select-all">
+            <input id="selectAll" type="checkbox" checked />
+            <label for="selectAll">전체 선택</label>
+        </div>
+
+        <!-- 장바구니 리스트 -->
+        <div class="cart-list" id="cartList"></div>
+
+        <!-- 총 금액 -->
+        <div class="total-row">
+            <div>총 금액</div>
+            <div class="total" id="totalPrice">0 원</div>
+        </div>
+
+        <button class="btn-buy" id="buyBtn">구매하기</button>
+        <div class="hint">체크한 상품만 결제 금액에 포함됩니다.</div>
+    </div>
+
+    <script>
+        // 데모 데이터 (나중에 API/로컬스토리지로 교체하면 됨)
+        const cartItems = [
+            {
+                id: "item-1",
+                name: "잘 익은 아보카도",
+                option: "180g내외 (중과)",
+                price: 12910,
+                qty: 1,
+                checked: true,
+                image: "../../static/image/avocado.png"
+            },
+            {
+                id: "item-2",
+                name: "따뜻한 패딩",
+                option: "M",
+                price: 228000,
+                qty: 1,
+                checked: true,
+                image: "../../static/image/padding.png"
+            }
+        ];
+
+        const cartListEl = document.getElementById("cartList");
+        const totalPriceEl = document.getElementById("totalPrice");
+        const selectAllEl = document.getElementById("selectAll");
+        const buyBtnEl = document.getElementById("buyBtn");
+
+        function formatKRW(num) {
+            // 240,910 원 형태
+            return num.toLocaleString("ko-KR") + " 원";
+        }
+
+        function calcTotal() {
+            return cartItems
+                .filter(i => i.checked)
+                .reduce((sum, i) => sum + (i.price * i.qty), 0);
+        }
+
+        function syncSelectAllState() {
+            const allChecked = cartItems.length > 0 && cartItems.every(i => i.checked);
+            const noneChecked = cartItems.every(i => !i.checked);
+
+            // allChecked면 true, 아니면 false
+            selectAllEl.checked = allChecked;
+
+            // 일부만 체크된 경우(인디터미네이트)
+            selectAllEl.indeterminate = !allChecked && !noneChecked;
+        }
+
+        function render() {
+            cartListEl.innerHTML = "";
+
+            cartItems.forEach((item) => {
+                const row = document.createElement("div");
+                row.className = "cart-item";
+
+                row.innerHTML = `
+          <div class="item-left">
+            <input type="checkbox" class="item-check" data-id="${item.id}" ${item.checked ? "checked" : ""} />
+            <div style="display:flex; gap:12px; width:100%;">
+              <img class="thumb" src="${item.image}" alt="${item.name}" />
+              <div class="item-info">
+                <div class="item-title">${item.name}</div>
+                <div class="meta"><span class="label">옵션:</span>${item.option}</div>
+                <div class="meta"><span class="label">가격:</span>${formatKRW(item.price)}</div>
+
+                <div class="qty-row">
+                  <button class="qty-btn btn-minus" type="button" data-id="${item.id}">−</button>
+                  <div class="qty" id="qty-${item.id}">${item.qty}</div>
+                  <button class="qty-btn btn-plus" type="button" data-id="${item.id}">+</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+
+                cartListEl.appendChild(row);
+            });
+
+            // 총액 반영
+            totalPriceEl.textContent = formatKRW(calcTotal());
+            syncSelectAllState();
+        }
+
+        // 이벤트 위임(체크박스/수량버튼)
+        cartListEl.addEventListener("click", (e) => {
+            const target = e.target;
+
+            // 개별 체크
+            if (target.classList.contains("item-check")) {
+                const id = target.dataset.id;
+                const item = cartItems.find(i => i.id === id);
+                if (!item) return;
+                item.checked = target.checked;
+
+                totalPriceEl.textContent = formatKRW(calcTotal());
+                syncSelectAllState();
+                return;
+            }
+
+            // 수량 -
+            if (target.classList.contains("btn-minus")) {
+                const id = target.dataset.id;
+                const item = cartItems.find(i => i.id === id);
+                if (!item) return;
+
+                item.qty = Math.max(1, item.qty - 1); // 최소 1
+                document.getElementById(`qty-${id}`).textContent = item.qty;
+
+                totalPriceEl.textContent = formatKRW(calcTotal());
+                return;
+            }
+
+            // 수량 +
+            if (target.classList.contains("btn-plus")) {
+                const id = target.dataset.id;
+                const item = cartItems.find(i => i.id === id);
+                if (!item) return;
+
+                item.qty = item.qty + 1;
+                document.getElementById(`qty-${id}`).textContent = item.qty;
+
+                totalPriceEl.textContent = formatKRW(calcTotal());
+                return;
+            }
+        });
+
+        // 전체 선택
+        selectAllEl.addEventListener("change", () => {
+            const isChecked = selectAllEl.checked;
+            cartItems.forEach(i => i.checked = isChecked);
+
+            // 다시 렌더(체크 상태 반영)
+            render();
+        });
+
+        // 구매하기
+        buyBtnEl.addEventListener("click", () => {
+            const selected = cartItems.filter(i => i.checked);
+
+            if (selected.length === 0) {
+                alert("구매할 상품을 선택해주세요!");
+                return;
+            }
+
+            // 선택된 상품만 다음 페이지로 넘기는 방식(임시):
+            // 실제 프로젝트에서는 서버/스토리지/상태관리로 넘겨야함!
+            localStorage.setItem("onpick_checkout_items", JSON.stringify(selected));
+
+            // 구매 페이지로 이동 
+            location.href = "../order/purchase.html";
+        });
+
+        // 첫 렌더
+        render();
+    </script>
+</body>
+
+</html>
