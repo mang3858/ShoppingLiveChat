@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OnPick SignUp</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        /* [공통 스타일] */
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            height: 100vh;
+            margin: 0;
+            padding-top: 100px;
+            box-sizing: border-box;
+        }
+
+        .signup-wrapper {
+            width: 300px;
+            text-align: center;
+        }
+
+        /* 1. 로고 스타일 */
+        .logo {
+            font-size: 36px;
+            font-weight: 800;
+            font-style: italic;
+            text-decoration: none;
+            margin-bottom: 10px;
+            display: inline-block;
+        }
+        .logo-on { color: #C26765; }
+        .logo-pick { color: #F2D785; }
+
+        /* 페이지 제목 */
+        h2 {
+            font-size: 20px;
+            font-weight: 500;
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+
+        /* 입력창 그룹 */
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #999;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+
+        input::placeholder {
+            color: #ccc;
+        }
+
+        /* 2. 버튼 공통 스타일 */
+        .btn-style {
+            background-color: #C26765;
+            color: #F2D785;
+            border: none;
+            padding: 12px 0;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            border-radius: 2px;
+            width: 150px; /* 기본 너비 */
+        }
+
+        .btn-style:hover {
+            background-color: #a85553;
+        }
+
+        /* --- [추가된 팝업 스타일] --- */
+        .popup-overlay {
+            display: none; /* 평소에는 숨김 */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); /* 반투명 배경 */
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .popup-content {
+            background-color: #fff;
+            padding: 30px 20px;
+            width: 280px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .popup-message {
+            font-size: 18px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 25px;
+        }
+
+        /* 팝업 내부 버튼 (약간 넓게) */
+        .btn-home {
+            width: 100%;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="signup-wrapper">
+    <!--  <a href="/" class="logo">로 변경-->
+    <a href="../home/home.html" class="logo">
+        <span class="logo-on">On</span><span class="logo-pick">Pick</span>
+    </a>
+
+    <h2>SignUp</h2>
+
+    <form id="signupForm" action="/signup" method="post">
+        <div class="input-group">
+            <input type="text" name="nickname" placeholder="닉네임을 입력하세요" required>
+            <input type="email" name="email" placeholder="이메일을 입력하세요" required>
+            <input type="password" name="password" placeholder="PW를 입력하세요" required>
+            <input type="text" name="address" placeholder="주소지를 입력하세요" required>
+        </div>
+
+        <button type="submit" class="btn-style">입력 완료</button>
+    </form>
+</div>
+
+<div id="popupOverlay" class="popup-overlay">
+    <div class="popup-content">
+        <div class="popup-message">회원가입이<br>완료되었습니다!</div>
+        <button id="goHomeBtn" class="btn-style btn-home">홈으로</button>
+    </div>
+</div>
+
+<script>
+    // 1. 요소 선택
+    const signupForm = document.getElementById('signupForm');
+    const popupOverlay = document.getElementById('popupOverlay');
+    const goHomeBtn = document.getElementById('goHomeBtn');
+
+    // 2. 입력 완료 버튼(Form Submit) 클릭 시 이벤트 처리
+    signupForm.addEventListener('submit', function(event) {
+        // 실제 서버로 데이터를 보내고 페이지가 새로고침되는 것을 막습니다.
+        // (백엔드 연동 시에는 여기서 fetch 등으로 데이터를 보내고 성공 시 팝업을 띄웁니다)
+        event.preventDefault();
+
+        // 입력 필드가 모두 채워졌는지 브라우저 기본 기능이 먼저 체크하므로,
+        // 이곳에 도달했다는 것은 필수 입력값이 모두 있다는 뜻입니다.
+
+        // 팝업창 띄우기 (display: none -> flex)
+        popupOverlay.style.display = 'flex';
+    });
+
+    // 3. '홈으로' 버튼 클릭 시 페이지 이동
+    goHomeBtn.addEventListener('click', function() {
+        // home.html로 이동
+        location.href = 'home.html';
+    });
+</script>
+
+</body>
+</html>

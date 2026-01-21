@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OnPick Home</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        /* [기본 설정] */
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            margin: 0;
+            background-color: #fff;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 400px;
+            padding: 40px 20px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* 로고 스타일 */
+        .logo {
+            font-size: 36px;
+            font-weight: 800;
+            font-style: italic;
+            text-decoration: none;
+            margin-bottom: 30px;
+        }
+        .logo-on { color: #C26765; }
+        .logo-pick { color: #F2D785; }
+
+        /* 상품 리스트 영역 */
+        .product-list {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            min-height: 400px;
+        }
+
+        /* 개별 상품 카드 */
+        .product-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            text-decoration: none;
+            color: inherit;
+            border-bottom: 1px solid #f0f0f0;
+            padding-bottom: 25px;
+        }
+
+        .product-item:last-child {
+            border-bottom: none;
+        }
+
+        /* 이미지 래퍼 */
+        .image-wrapper {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            flex-shrink: 0;
+        }
+
+        .product-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 6px;
+            background-color: #f0f0f0; /* 이미지가 없을 때 배경색 */
+        }
+
+        /* 배지 스타일 */
+        .badge {
+            position: absolute;
+            top: 0;
+            left: 0;
+            padding: 2px 6px;
+            color: #fff;
+            font-size: 11px;
+            font-weight: 700;
+            border-top-left-radius: 6px;
+            border-bottom-right-radius: 6px;
+        }
+        .badge-live { background-color: #EF5350; }
+        .badge-ended { background-color: #757575; }
+
+        /* 상품 정보 */
+        .product-info {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding-top: 5px;
+        }
+        .product-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #000;
+            margin: 0 0 6px 0;
+        }
+        .price-info { font-size: 15px; margin-bottom: 6px; }
+        .discount { color: #C26765; font-weight: 700; margin-right: 4px; }
+        .price { font-weight: 500; color: #333; }
+        .viewer-count {
+            display: flex;
+            align-items: center;
+            font-size: 13px;
+            color: #555;
+        }
+        .viewer-icon {
+            width: 14px;
+            height: 14px;
+            margin-right: 4px;
+            fill: #555;
+        }
+
+        /* 페이지네이션 스타일 */
+        .pagination {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 30px;
+            margin-bottom: 30px;
+        }
+
+        .page-btn {
+            background: none;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 5px 10px;
+            cursor: pointer;
+            color: #555;
+            font-size: 14px;
+        }
+
+        .page-btn:hover { background-color: #f9f9f9; }
+        .page-btn:disabled { color: #ccc; cursor: not-allowed; border-color: #eee; }
+
+        .page-numbers {
+            display: flex;
+            gap: 8px;
+        }
+
+        .page-num {
+            cursor: pointer;
+            font-size: 14px;
+            padding: 0 5px;
+            color: #888;
+        }
+
+        .page-num.active {
+            color: #C26765;
+            font-weight: 800;
+            text-decoration: underline;
+        }
+
+        /* 로그인 링크 */
+        .login-link {
+            font-size: 18px;
+            color: #000;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 10px 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <a href="home.html" class="logo">
+        <span class="logo-on">On</span><span class="logo-pick">Pick</span>
+    </a>
+
+    <div class="product-list" id="productList">
+
+        <a href="product_detail.html" class="product-item">
+            <div class="image-wrapper">
+                <img src="../../static/image/avocado.png" alt="아보카도" class="product-img">
+                <span class="badge badge-live">● LIVE</span>
+            </div>
+            <div class="product-info">
+                <h3 class="product-title">잘 익은 아보카도</h3>
+                <div class="price-info">
+                    <span class="discount">30%</span><span class="price">299원(100g)</span>
+                </div>
+                <div class="viewer-count">
+                    <svg class="viewer-icon" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                    <span>25655</span>
+                </div>
+            </div>
+        </a>
+
+        <a href="product_detail.html" class="product-item">
+            <div class="image-wrapper">
+                <img src="../../static/image/padding.png" alt="패딩" class="product-img">
+                <span class="badge badge-live">● LIVE</span>
+            </div>
+            <div class="product-info">
+                <h3 class="product-title">따뜻한 패딩</h3>
+                <div class="price-info"><span class="discount">30%</span><span class="price">59,900원</span></div>
+                <div class="viewer-count">
+                    <svg class="viewer-icon" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                    <span>12030</span>
+                </div>
+            </div>
+        </a>
+
+        <a href="product_detail.html" class="product-item">
+            <div class="image-wrapper">
+                <img src="../../static/image/kimchi.png" alt="김치찌개" class="product-img">
+                <span class="badge badge-ended">방송종료</span>
+            </div>
+            <div class="product-info">
+                <h3 class="product-title">얼큰한 김치찌개</h3>
+                <div class="price-info"><span class="discount">10%</span><span class="price">8,900원</span></div>
+                <div class="viewer-count">
+                    <svg class="viewer-icon" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                    <span>5400</span>
+                </div>
+            </div>
+        </a>
+
+        <a href="product_detail.html" class="product-item">
+            <div class="image-wrapper">
+                <img src="../../static/image/water.png" alt="생수" class="product-img">
+                <span class="badge badge-ended">방송종료</span>
+            </div>
+            <div class="product-info">
+                <h3 class="product-title">시원한 생수</h3>
+                <div class="price-info"><span class="discount">5%</span><span class="price">500원</span></div>
+                <div class="viewer-count">
+                    <svg class="viewer-icon" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                    <span>1100</span>
+                </div>
+            </div>
+        </a>
+
+        <a href="product_detail.html" class="product-item">
+            <div class="image-wrapper">
+                <img src="../../static/image/apple.png" alt="사과" class="product-img">
+                <span class="badge badge-live">● LIVE</span>
+            </div>
+            <div class="product-info">
+                <h3 class="product-title">꿀사과 1박스</h3>
+                <div class="price-info"><span class="discount">20%</span><span class="price">15,000원</span></div>
+                <div class="viewer-count">
+                    <svg class="viewer-icon" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                    <span>8900</span>
+                </div>
+            </div>
+        </a>
+
+    </div>
+
+    <div class="pagination">
+        <button class="page-btn" id="prevBtn">&lt;</button>
+        <div class="page-numbers" id="pageNumbers"></div>
+        <button class="page-btn" id="nextBtn">&gt;</button>
+    </div>
+
+    <a href="../account/login.html" class="login-link">Login</a>
+
+</div>
+
+<script>
+    const itemsPerPage = 3;
+    let currentPage = 1;
+
+    const productList = document.getElementById('productList');
+    const items = Array.from(productList.getElementsByClassName('product-item'));
+    const totalItems = items.length;
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const pageNumbers = document.getElementById('pageNumbers');
+
+    function renderPage(page) {
+        const start = (page - 1) * itemsPerPage;
+        const end = start + itemsPerPage;
+
+        items.forEach((item, index) => {
+            if (index >= start && index < end) {
+                item.style.display = 'flex';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+
+        pageNumbers.innerHTML = '';
+        for (let i = 1; i <= totalPages; i++) {
+            const span = document.createElement('span');
+            span.textContent = i;
+            span.className = 'page-num';
+            if (i === page) {
+                span.classList.add('active');
+            }
+            span.addEventListener('click', () => {
+                currentPage = i;
+                renderPage(currentPage);
+            });
+            pageNumbers.appendChild(span);
+        }
+
+        prevBtn.disabled = (page === 1);
+        nextBtn.disabled = (page === totalPages);
+    }
+
+    prevBtn.addEventListener('click', () => {
+        if (currentPage > 1) {
+            currentPage--;
+            renderPage(currentPage);
+        }
+    });
+
+    nextBtn.addEventListener('click', () => {
+        if (currentPage < totalPages) {
+            currentPage++;
+            renderPage(currentPage);
+        }
+    });
+
+    renderPage(currentPage);
+</script>
+
+</body>
+</html>
