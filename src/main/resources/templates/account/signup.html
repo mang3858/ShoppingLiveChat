@@ -83,6 +83,44 @@
             background-color: #a85553;
         }
 
+        /* --- [카카오 로그인 섹션 추가 스타일] --- */
+        .kakao-container {
+            margin: 20px 0 30px 0; /* 위아래 간격 조정 */
+            text-align: center;
+        }
+
+        .kakao-text {
+            font-size: 13px;
+            color: #999; /* 회색 문구 */
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+
+        .kakao-btn {
+            background-color: #FEE500; /* 카카오 공식 노란색 */
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%; /* 원형 버튼 */
+            cursor: pointer;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            transition: transform 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .kakao-btn:hover {
+            transform: scale(1.05); /* 마우스 올리면 살짝 커짐 */
+        }
+
+        /* SVG 아이콘 크기 및 색상 */
+        .kakao-icon {
+            width: 24px;
+            height: 24px;
+            fill: #3C1E1E; /* 카카오 공식 갈색 */
+        }
+
         /* --- [추가된 팝업 스타일] --- */
         .popup-overlay {
             display: none; /* 평소에는 숨김 */
@@ -129,6 +167,15 @@
     </a>
 
     <h2>SignUp</h2>
+
+    <div class="kakao-container">
+        <div class="kakao-text">카카오 계정으로 회원가입 하기</div>
+        <button type="button" class="kakao-btn" onclick="alert('카카오 로그인 기능 준비중입니다.')">
+            <svg class="kakao-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 3C6.48 3 2 6.48 2 10.77C2 13.54 3.86 15.98 6.71 17.34C6.55 17.9 6.13 19.41 6.04 19.74C5.92 20.18 6.36 20.4 6.64 20.21C6.83 20.08 9.38 18.36 10.5 17.58C11 17.65 11.5 17.69 12 17.69C17.52 17.69 22 14.21 22 9.92C22 5.63 17.52 3 12 3Z"/>
+            </svg>
+        </button>
+    </div>
 
     <form id="signupForm" action="/signup" method="post">
         <div class="input-group">
