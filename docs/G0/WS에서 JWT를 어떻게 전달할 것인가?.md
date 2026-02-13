@@ -85,6 +85,7 @@ stompClient.connect({
     console.log('Connected: ' + frame);
 });
 ```
+
 ## 5. 추가 고려사항 (Next Steps)
 * **토큰 만료 처리 (Token Expiration):**
   라이브 방송 시청 시간이 길어져 액세스 토큰이 만료될 경우를 대비해야 합니다. 소켓 연결이 끊어지지 않도록 관리하거나, 재연결(Reconnect) 시도 시 **리프레시 토큰(Refresh Token)**을 사용하여 새로운 액세스 토큰을 발급받아 헤더를 갱신하는 로직을 클라이언트에 포함해야 합니다.
